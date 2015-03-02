@@ -1,0 +1,83 @@
+ToothGrowth Dataset Study
+==========================
+
+## Synopsis
+
+For the ToothGrowth data in the datasets, we perform basic exploratory analyses and provide basic summary. By using confidence intervals and hypothesis tests, we compare tooth growth by supp and dose variables.
+
+## Data Processing
+
+Load the required packages and the data ToothGrowth. 
+```{r}
+library(ggplot2)
+
+library(datasets)
+data(ToothGrowth)
+```
+
+The dataset ToothGrowth lists the effect of Vitamin C given via two delivery methods, orange juice or ascorbic acid(OJ and VC) on Tooth Growth in Guinea Pigs.
+
+## Analysis
+
+### Summary
+
+Check the summary and dimensions.
+```{r}
+dim(ToothGrowth)
+summary(ToothGrowth)
+```
+
+For initial analysis of the data, we draw the box plot of the data with various levels of dosage.
+
+```{r}
+g <- ggplot(ToothGrowth, aes( x = factor(dose), y = len, fill = factor(dose)))
+g <- g + geom_boxplot() + facet_grid(.~supp) +
+    labs(x="Vitamin C dosage in mg", y="Length of Tooth Growth", title="Length of Tooth Growth per Dosage") 
+print(g)
+```
+
+From the summary, it shows that there are three levels of amount dosage and two types of Vitamin C supplement. From the box plot above it is analysed that higher amounts of dose either Orange Juice or Ascorbic acid results in longer tooth growth.
+
+### T Confidence intervals and hypothesis tests
+
+Check for group differences due to different supplement type.
+```{r}
+# Assume unequal variances between the two groups
+t.test(len ~ supp, data = ToothGrowth)
+```
+
+The p-value is 0.06 and contains zero confidence interval and hence the null hypothesis can not be rejected.
+
+Create three groups of data, each containing two levels of dose pairs.
+```{r}
+pair1<-subset(ToothGrowth, dose %in% c(0.5, 1.0))
+pair2<-subset(ToothGrowth, dose %in% c(0.5, 2.0))
+pair3<-subset(ToothGrowth, dose %in% c(1.0, 2.0))
+```
+
+Perform the t-test on pair 1, with two different dose levels to check group differences due to different dose levels(0.5, 1.0)
+```{r}
+t.test(len ~ dose, data = pair1)
+```
+
+Perform the t-test on pair 2, with two different dose levels to check group differences due to different dose levels(0.5, 2.0)
+```{r}
+t.test(len ~ dose, data = pair2)
+```
+
+Perform the t-test on pair 3, with two different dose levels to check group differences due to different dose levels(1.0, 2.0)
+```{r}
+t.test(len ~ dose, data = pair3)
+```
+
+## Results
+
+For all three dose level pairs, the p-value is less than 0.05 and the confidence interval does not contain zero and hence the null hypothesis of no affect of dose on the tooth growth can be rejected. Further from the box plot we can see that increasing the dosage increases the tooth length.
+
+### Conclusions
+1. As the dose level is increased, the growth of the tooth length increases.
+
+### Assumptions
+1. For t-tests, the variances are assumed to be unequal for the two groups being compared.
+2. The sample population 60 guinea pigs are representative of the entire population of guinea pigs.
+
